@@ -1,121 +1,149 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import React, {useState} from 'react';
 import {
+  Keyboard,
+  KeyboardAvoidingView,
   Platform,
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
   StyleSheet,
-  Text,
-  useColorScheme,
+  TextInput,
+  TouchableOpacity,
   View,
 } from 'react-native';
+import CustomText from './components/CustomText';
+import Task from './components/Task/Task';
+import {Task as TaskInterface} from './interfaces/propsInterfaces';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+export default function App() {
+  const [task, setTask] = useState<TaskInterface>();
+  const [allTasks, setAllTask] = useState<Array<TaskInterface>>([]);
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+  function handleTask() {
+    Keyboard.dismiss();
 
-function Section({children, title}: SectionProps): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    if (task?.task) {
+      setAllTask([...allTasks, task]);
+      setTask({
+        task: '',
+        id: '',
+        isCompleted: false,
+        updatedAt: new Date(),
+        createdAt: new Date(),
+      });
+    }
+  }
+
+  function handleDeleteTask(id: string) {
+    const allTasksCopy = [...allTasks];
+
+    const index = allTasksCopy.findIndex(data => data.id === id);
+
+    console.log(index);
+    allTasksCopy.splice(index, 1);
+
+    setAllTask(allTasksCopy);
+  }
+
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.mainContainer}>
+      <View>
+        <CustomText children={"Today's Tasks"} style={styles.customText} />
+
+        <View style={styles.taskContainer}>
+          {/* tasks Will be Here */}
+          {allTasks.map(data => {
+            return (
+              <Task
+                key={data.id}
+                isCompleted={data.isCompleted}
+                task={data.task}
+                id={data.id}
+                createdAt={data.createdAt}
+                updatedAt={data.updatedAt}
+                handleDeleteTask={handleDeleteTask}
+              />
+            );
+          })}
+        </View>
+      </View>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.newTaskContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Write a Task!"
+          value={task?.task}
+          onChangeText={text =>
+            setTask({
+              task: text,
+              id: Date.now().toString(),
+              isCompleted: false,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            })
+          }
+        />
+
+        <TouchableOpacity onPress={handleTask}>
+          <View style={styles.taskAddContainer}>
+            <CustomText style={styles.addIcon} children={'+'} />
+          </View>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
     </View>
   );
 }
 
-function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  console.log(Platform);
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits to See Them Live.
-          </Section>
-          <Section title="See Your Changes Live">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  mainContainer: {
+    backgroundColor: '#e3e5e8',
+    height: '100%',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
+  text: {
+    padding: 32,
     fontWeight: '700',
+    fontFamily: 'Poppins',
   },
+  customText: {
+    padding: 16,
+    // textAlign: 'center',
+    fontSize: 28,
+    fontWeight: '800',
+    // backgroundColor: '#89c6f0',
+    color: '#0f0f0f',
+  },
+  taskContainer: {
+    padding: 10,
+    flexDirection: 'column',
+    gap: 50,
+  },
+  inputContainer: {},
+  newTaskContainer: {
+    position: 'absolute',
+    bottom: 60,
+    width: '100%',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 10,
+  },
+  textContainer: {},
+  input: {
+    padding: 15,
+    width: 250,
+    backgroundColor: 'white',
+    borderRadius: 30,
+    borderColor: '#c0c0c0',
+    borderWidth: 1,
+  },
+  taskAddContainer: {
+    width: 60,
+    height: 60,
+    backgroundColor: 'white',
+    borderRadius: 100,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderColor: '#c0c0c0',
+    borderWidth: 1,
+  },
+  addIcon: {},
 });
-
-export default App;
