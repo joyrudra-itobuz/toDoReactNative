@@ -7,7 +7,7 @@ export default function CustomText({
   ...textProps
 }: {
   children: ReactNode;
-  style: StyleProp<TextStyle>;
+  style?: StyleProp<TextStyle>;
 }) {
   return (
     <Text {...textProps} style={(styles.customText, style)}>
