@@ -13,7 +13,9 @@ export default function Task({
   updatedAt,
   handleDeleteTask,
 }: TaskProps) {
-  const [completed, setIsCompleted] = useState<boolean>(false);
+  const [completed, setIsCompleted] = useState<boolean>(isCompleted);
+
+  console.log({createdAt, updatedAt});
 
   return (
     <View style={styles.taskContainer}>
@@ -38,6 +40,7 @@ export default function Task({
       />
       <View style={styles.taskTimeContainer}>
         <CustomText
+          style={styles.dateColor}
           children={
             updatedAt &&
             `on ${format(updatedAt, 'dd/mm/yy')} at ${format(
@@ -92,8 +95,12 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: -40,
     right: 5,
-    backgroundColor: 'white',
+    backgroundColor: '#1174bf',
     padding: 5,
+    paddingHorizontal: 15,
     borderRadius: 20,
+  },
+  dateColor: {
+    color: 'white',
   },
 });

@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
   taskContainer: {
     padding: 10,
     flexDirection: 'column',
-    gap: 10,
+    gap: 50,
   },
   inputContainer: {},
   newTaskContainer: {
